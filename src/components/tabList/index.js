@@ -1,8 +1,9 @@
 import React from 'react';
-import TabItem from './tabItem';
-import AddIcon from '../assest/image/add-icon.png';
-import ThreeDotIcon from '../assest/image/three-dot-icon.jpeg';
-import { initialTabList } from '../initialData';
+import AddIcon from '../../assest/image/add-icon.png';
+import ThreeDotIcon from '../../assest/image/three-dot-icon.png';
+import { initialTabList } from '../../initialData';
+import TabItem from '../tabItem';
+import {bodyPage} from './helper';
 
 
 const TabList = () => {
@@ -21,9 +22,18 @@ const TabList = () => {
     setLength(length + 1);
   }
 
-  const bodyPage = (id) => {  
-    const body = tabList.find(item => item.id === id);
-    return body ? `${body.body}${body.content} (id: ${body.id})` : 'There is no body';
+  const handleCalbackDeleteTab = (id) => {
+      const newTabList = tabList.filter((item) => item.id !== id);
+      setTabList(newTabList);
+      setLength(length - 1);
+  }
+
+  const handleCalbackActiveTab = (id) => {
+    setActiveTab(id);
+  }
+
+  const isSelect = (id) => {
+    return tabList.length===1 ? true: id === activeTab;
   }
 
   return (
@@ -34,18 +44,13 @@ const TabList = () => {
           {tabList.map((tabItem, index) => {
             return (
               <TabItem
-                style={{backgroundColor: activeTab === tabItem.id ? 'red' : 'orange'}}
                 key={tabItem.id}
+                isSelect={isSelect(tabItem.id)}
+                isTabListInvalid={tabList.length > 1}
                 method={tabItem.method}
-                content={tabItem.content + tabItem.id}
-                handleCalbackDeleteTab={() => {
-                  const newTabList = tabList.filter((item) => item.id !== tabItem.id);
-                  setTabList(newTabList);
-                  setLength(length - 1);
-                }}
-                handleCalbackActiveTab={() => {
-                  setActiveTab(tabItem.id);
-                }}
+                content={tabItem.content}
+                handleCalbackDeleteTab={() => handleCalbackDeleteTab(tabItem.id)}
+                handleCalbackActiveTab={() => handleCalbackActiveTab(tabItem.id)}
               />
             );
           })}
@@ -61,7 +66,7 @@ const TabList = () => {
         </div>
       </div>
       <div className="body-text">
-        {bodyPage(activeTab)}
+        {bodyPage(tabList, activeTab)}
       </div>
     </div>
 
